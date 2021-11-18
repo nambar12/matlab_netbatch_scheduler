@@ -1,0 +1,6 @@
+# --*-conf-*---
+# Local Words for sbspell and sbcheck -check typos
+# This file is automatically maintained by sbspell.
+# Copyright 2015-2016 The MathWorks, Inc.
+
+ LocalWords:  nbjob
