@@ -90,6 +90,7 @@ quotedScriptName = sprintf('%s%s%s', quote, fullfile(dirpart, scriptName), quote
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CUSTOMIZATION MAY BE REQUIRED %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% RSN: TODO: Can we hardcode this to 1 or remove entirely?  Check with NumThreads>1.
 additionalSubmitArgs = sprintf('--class-reservation cores=%d', environmentProperties.NumberOfTasks);
 commonSubmitArgs = getCommonSubmitArgs(cluster);
 if ~isempty(commonSubmitArgs) && ischar(commonSubmitArgs)
@@ -228,7 +229,7 @@ if ~useJobArrays
     return;
 end
 
-%RSN: Need to completely rewrite support for JobArrays
+%% RSN: TODO: Add support for JAs later.
 if isprop(cluster.AdditionalProperties, 'MaxJobArraySize')
     if ~isnumeric(cluster.AdditionalProperties.MaxJobArraySize) || ...
             cluster.AdditionalProperties.MaxJobArraySize < 1

@@ -10,7 +10,7 @@ function submitString = getSubmitString(jobName, quotedLogFile, quotedCommand, .
 % Note that extra spaces in the nbjob command are permitted
 
 %{
-% RSN: No current support for JAs
+%% RSN: TODO: Add support for JAs later.
 if ~isempty(jobArrayString)
     jobArrayString = strcat('[', jobArrayString, ']');
 end

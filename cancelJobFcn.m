@@ -33,7 +33,7 @@ erroredJobAndCauseStrings = cell(size(schedulerIDs));
 % Get the cluster to delete the job
 for ii = 1:length(schedulerIDs)
     schedulerID = schedulerIDs{ii};
-    %% RSN: commandToRun = sprintf('bkill "%s"', schedulerID);
+    %% RSN: TODO: Extract "target" name.  Don't hardcode 'matlab'.
     commandToRun = sprintf('nbjob remove --target matlab %d', jobID);
     dctSchedulerMessage(4, '%s: Canceling job on cluster using command:\n\t%s.', currFilename, commandToRun);
     try
@@ -43,11 +43,6 @@ for ii = 1:length(schedulerIDs)
         cmdFailed = true;
         cmdOut = err.message;
     end
-    % If a job is already in a terminal state, nbjob will return a failed
-    % failed error code and cmdOut will be of the form:
-    % RSN: VERIFY FORM
-    % 'Job <7800>: Job has already finished'
-    % If this happens we do not consider the command to have failed.
     if cmdFailed
         % Keep track of all jobs that errored when being cancelled, either
         % through a bad exit code or if an error was thrown. We'll report

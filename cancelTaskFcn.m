@@ -37,7 +37,7 @@ end
 % Get the cluster to delete the task
 schedulerID = task.SchedulerID;
 erroredTaskAndCauseString = '';
-%% RSN: commandToRun = sprintf('bkill "%s"', schedulerID);
+%% RSN: TODO: Extract "target" name.  Don't hardcode 'matlab'.
 commandToRun = sprintf('nbjob remove --target matlab %d', jobID);
 dctSchedulerMessage(4, '%s: Canceling task on cluster using command:\n\t%s.', currFilename, commandToRun);
 try
@@ -47,11 +47,6 @@ catch err
     cmdFailed = true;
     cmdOut = err.message;
 end
-% If a job is already in a terminal state, nbjob remove will return a failed
-% failed error code and cmdOut will be of the form:
-% RSN: VERIFY FORM
-% 'Job <7800>: Job has already finished'
-% If this happens we do not consider the command to have failed.
 if cmdFailed
     % Record if the task errored when being cancelled, either through a bad
     % exit code or if an error was thrown. We'll report this as a warning.

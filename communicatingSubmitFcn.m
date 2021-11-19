@@ -100,6 +100,7 @@ jobName = sprintf('Job%d', job.ID);
 % You may wish to customize this section to match your cluster,
 % for example if you wish to limit the number of nodes that
 % can be used for a single job.
+%% RSN: TODO: Don't hardcode slots_per_host
 additionalSubmitArgs = sprintf('--parallel slots=%d,slots_per_host=1', environmentProperties.NumberOfTasks);
 dctSchedulerMessage(4, '%s: Requesting %d slots.', currFilename, environmentProperties.NumberOfTasks);
 commonSubmitArgs = getCommonSubmitArgs(cluster);
