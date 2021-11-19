@@ -32,8 +32,9 @@ if jobInTerminalState
 end
 % "jobid==<number>||jobid==<number2>"
 [schedulerIDs, numSubmittedTasks] = getSimplifiedSchedulerIDsForJob(job);
-% ids = sprintf('jobid==%d||', jobIDs{:});
-% ids(end-1:end) = [];
+%% RSN: TODO: Check if we need to parse this differently
+%%            ids = sprintf('jobid==%d||', jobIDs{:});
+%%            ids(end-1:end) = [];
 commandToRun = sprintf('nbstatus jobs --target matlab --format script --fields jobid,status,exitstatus "%s"', sprintf('%s ', schedulerIDs{:}));
 dctSchedulerMessage(4, '%s: Querying cluster for job state using command:\n\t%s', currFilename, commandToRun);
 
