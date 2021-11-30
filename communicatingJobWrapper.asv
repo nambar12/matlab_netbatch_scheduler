@@ -44,7 +44,7 @@ HOSTS=`echo ${NB_PARALLEL_JOB_HOSTS} | tr " " ","`
 echo $HOST
 
 # Construct the command to run.
-# instead of the below line, loop over all hosts and run: nbjob prun --host <host> $CMD
+# use nbjob prun --host
 CMD="\"${FULL_MPIEXEC}\" ${MPI_VERBOSE} -hosts ${HOSTS} \"${PARALLEL_SERVER_MATLAB_EXE}\" ${PARALLEL_SERVER_MATLAB_ARGS}"
 
 # Echo the command so that it is shown in the output log.
