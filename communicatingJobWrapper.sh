@@ -43,9 +43,18 @@ fi
 HOSTS=`echo ${NB_PARALLEL_JOB_HOSTS} | tr " " ","`
 echo $HOST
 
+STRACE_DIR=$HOME/stracelogs
+test -d $STRACE_DIR || mkdir -p $STRACE_DIR
+
+
+STRACE_LAUNCHER_PFX="strace -o $STRACE_DIR/mpiexec_a -tt -f"
+STRACE_LAUNCHEE_PFX="strace -o /tmp/worker_a -tt -f"
+CMD="$STRACE_LAUNCHER_PFX $MPIEXEC -l $MACHINE_ARG $STRACE_LAUNCHEE_PFX $MDCE_MATLAB_EXE $MDCE_MATLAB_ARGS"
+
+
 # Construct the command to run.
 # instead of the below line, loop over all hosts and run: nbjob prun --host <host> $CMD
-CMD="\"${FULL_MPIEXEC}\" ${MPI_VERBOSE} -hosts ${HOSTS} \"${PARALLEL_SERVER_MATLAB_EXE}\" ${PARALLEL_SERVER_MATLAB_ARGS}"
+CMD="${STRACE_LAUNCHER_PFX} \"${FULL_MPIEXEC}\" ${MPI_VERBOSE} -v -launcher-exec /nfs/iil/disks/iec_sws10/nambar/MatLabNetbatchScheduler/mdcs_scripts/parallel_runner.sh -hosts ${HOSTS} ${STRACE_LAUNCHEE_PFX} \"${PARALLEL_SERVER_MATLAB_EXE}\" ${PARALLEL_SERVER_MATLAB_ARGS}"
 
 # Echo the command so that it is shown in the output log.
 echo $CMD
