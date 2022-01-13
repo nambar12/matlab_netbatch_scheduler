@@ -69,8 +69,7 @@ numRunning = numel(regexp(nbstatusOut, 'Run'));
 % How many Failed jobs
 numFailed = numel(regexp(nbstatusOut, 'EXIT|ZOMBI'));
 % How many Completed
-numFinished = numel(regexp(nbstatusOut, 'Comp'))- numel(regexp(nbstatusOut,':'));
-
+numFinished = numel(regexp(nbstatusOut, 'Comp')) - numel(regexp(nbstatusOut,':'));
 
 % If the number of finished jobs is the same as the number of jobs that we
 % asked about then the entire job has finished.
