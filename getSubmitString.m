@@ -16,5 +16,5 @@ if ~isempty(jobArrayString)
 end
 %}
 
-feederName = [getenv('USER') '_matlab'];
+feederName = getFeederName();
 submitString = sprintf('nbjob run --properties name=%s --log-file %s --target %s --class "%s" --task %s %s %s', jobName, quotedLogFile, feederName, machineClass, taskId, additionalSubmitArgs, quotedCommand);

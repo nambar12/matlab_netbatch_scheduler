@@ -91,7 +91,7 @@ folder = environmentProperties.StorageLocation(sidx(end)+1:eidx(end)-1);
 outputFilename = [folder '/' environmentProperties.JobLocation '/task.conf'];
 createTaskConfFile(outputFilename, remoteQueue, remoteQslot);
 
-feederName = [getenv('USER') '_matlab'];
+feederName = getFeederName();
 commandToRun = ['nbfeeder start --join --name ' feederName];
 try
     % Make the shelled out call to run the command.
