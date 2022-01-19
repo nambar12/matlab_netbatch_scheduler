@@ -1,5 +1,5 @@
 function createSubmitScript(outputFilename, jobName, quotedLogFile, quotedScriptName, ...
-    environmentVariables, additionalSubmitArgs, taskId, clazz, jobArrayString)
+    environmentVariables, additionalSubmitArgs, taskId, machineClass, jobArrayString)
 % Create a script that sets the correct environment variables and then
 % executes the Netbatch nbjob command.
 
@@ -28,7 +28,7 @@ end
 
 % Generate the command to run and write it.
 commandToRun = getSubmitString(jobName, quotedLogFile, quotedScriptName, ...
-    additionalSubmitArgs, taskId, clazz, jobArrayString);
+    additionalSubmitArgs, taskId, machineClass, jobArrayString);
 fprintf(fid, '%s\n', commandToRun);
 
 % Close the file

@@ -1,5 +1,5 @@
 function submitString = getSubmitString(jobName, quotedLogFile, quotedCommand, ...
-    additionalSubmitArgs, taskId, clazz, jobArrayString)
+    additionalSubmitArgs, taskId, machineClass, jobArrayString)
 %GETSUBMITSTRING Gets the correct nbjob command for a Netbatch cluster
 
 % Copyright 2010-2019 The MathWorks, Inc.
@@ -17,4 +17,4 @@ end
 %}
 
 feederName = [getenv('USER') '_matlab'];
-submitString = sprintf('nbjob run --properties name=%s --log-file %s --target %s --class "%s" --task %s %s %s', jobName, quotedLogFile, feederName, clazz, taskId, additionalSubmitArgs, quotedCommand);
+submitString = sprintf('nbjob run --properties name=%s --log-file %s --target %s --class "%s" --task %s %s %s', jobName, quotedLogFile, feederName, machineClass, taskId, additionalSubmitArgs, quotedCommand);

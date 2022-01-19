@@ -327,9 +327,9 @@ if nargin < 8
 end
 
 localScriptName = tempname(localJobDirectory);
-clazz = cluster.AdditionalProperties.Class;
+machineClass = cluster.AdditionalProperties.MachineClass;
 createSubmitScript(localScriptName, jobName, quotedLogFile, quotedScriptName, ...
-    environmentVariables, additionalSubmitArgs, taskId, clazz, jobArrayString);
+    environmentVariables, additionalSubmitArgs, taskId, machineClass, jobArrayString);
 % Create the command to run
 commandToRun = sprintf('sh %s', localScriptName);
 

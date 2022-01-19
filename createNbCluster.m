@@ -14,7 +14,7 @@ c.JobStorageLocation = jsl;
 c.AdditionalProperties.UseSmpd = false;
 c.AdditionalProperties.RemoteQueue = 'iil_critical';
 c.AdditionalProperties.RemoteQslot = '/admin/nambar';
-c.AdditionalProperties.Class = 'SLES12';
+c.AdditionalProperties.MachineClass = 'SLES12';
 c.saveAsProfile('netbatch')
 c.saveProfile('Description', 'netbatch')
 

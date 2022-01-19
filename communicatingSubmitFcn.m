@@ -152,9 +152,9 @@ end
 % Create a script to submit a Netbatch job - this will be created in the job directory
 dctSchedulerMessage(5, '%s: Generating script for task.', currFilename);
 localScriptName = tempname(localJobDirectory);
-clazz = cluster.AdditionalProperties.Class;
+machineClass = cluster.AdditionalProperties.MachineClass;
 createSubmitScript(localScriptName, jobName, quotedLogFile, quotedScriptName, ...
-    variables, additionalSubmitArgs, taskId, clazz);
+    variables, additionalSubmitArgs, taskId, machineClass);
 % Create the command to run
 commandToRun = sprintf('sh %s', localScriptName);
 
