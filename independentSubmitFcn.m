@@ -81,6 +81,46 @@ variables = {'PARALLEL_SERVER_DECODE_FUNCTION', decodeFunction; ...
 % The local job directory
 localJobDirectory = cluster.getJobFolder(job);
 
+% generate task configuration file
+remoteQueue = cluster.AdditionalProperties.RemoteQueue;
+remoteQslot = cluster.AdditionalProperties.RemoteQslot;
+jsl = environmentProperties.StorageLocation;
+sidx = strfind(jsl,'{');
+eidx = strfind(jsl,'}');
+folder = environmentProperties.StorageLocation(sidx(end)+1:eidx(end)-1);
+outputFilename = [folder '/' environmentProperties.JobLocation '/task.conf'];
+createTaskConfFile(outputFilename, remoteQueue, remoteQslot);
+
+feederName = [getenv('USER') '_matlab'];
+commandToRun = ['nbfeeder start --join --name ' feederName];
+try
+    % Make the shelled out call to run the command.
+    [cmdFailed, cmdOut] = runSchedulerCommand(commandToRun);
+catch err
+    cmdFailed = true;
+    cmdOut = err.message;
+end
+if cmdFailed
+    error('parallelexamples:GenericNetbatch:CreateFeeder', ...
+        'Failed to create feeder with the following message:\n%s', cmdOut);
+end
+
+
+commandToRun = ['nbtask load --target ' feederName ' ' outputFilename];
+try
+    % Make the shelled out call to run the command.
+    [cmdFailed, cmdOut] = runSchedulerCommand(commandToRun);
+catch err
+    cmdFailed = true;
+    cmdOut = err.message;
+end
+if cmdFailed
+    error('parallelexamples:GenericNetbatch:TaskLoadFailed', ...
+        'Task load failed with the following message:\n%s', cmdOut);
+end
+
+taskId = extractTaskId(cmdOut);
+
 % The script name is independentJobWrapper.sh
 scriptName = 'independentJobWrapper.sh';
 % The wrapper script is in the same directory as this file
@@ -144,7 +184,7 @@ if useJobArrays
         % will be created in the job directory
         dctSchedulerMessage(5, '%s: Generating script for job array %i', currFilename, ii);
         commandsToRun{ii} = iGetCommandToRun(localJobDirectory, jobName, ...
-            quotedLogFile, quotedScriptName, environmentVariables, additionalSubmitArgs, jobArrayString);
+            quotedLogFile, quotedScriptName, environmentVariables, additionalSubmitArgs, taskId, jobArrayString);
     end
 else
     % Do not use job arrays and submit each task individually.
@@ -172,7 +212,7 @@ else
         % the job directory
         dctSchedulerMessage(5, '%s: Generating script for task %i', currFilename, ii);
         commandsToRun{ii} = iGetCommandToRun(localJobDirectory, jobName, ...
-            quotedLogFile, quotedScriptName, environmentVariables, additionalSubmitArgs);
+            quotedLogFile, quotedScriptName, environmentVariables, additionalSubmitArgs, taskId);
     end
 end
 
@@ -281,14 +321,15 @@ useJobArrays = true;
 maxJobArraySize = str2double(tokens{1});
 
 function commandToRun = iGetCommandToRun(localJobDirectory, jobName, ...
-    quotedLogFile, quotedScriptName, environmentVariables, additionalSubmitArgs, jobArrayString)
-if nargin < 7
+    quotedLogFile, quotedScriptName, environmentVariables, additionalSubmitArgs, taskId, jobArrayString)
+if nargin < 8
     jobArrayString = [];
 end
 
 localScriptName = tempname(localJobDirectory);
+clazz = cluster.AdditionalProperties.Class;
 createSubmitScript(localScriptName, jobName, quotedLogFile, quotedScriptName, ...
-    environmentVariables, additionalSubmitArgs, jobArrayString);
+    environmentVariables, additionalSubmitArgs, taskId, clazz, jobArrayString);
 % Create the command to run
 commandToRun = sprintf('sh %s', localScriptName);
 

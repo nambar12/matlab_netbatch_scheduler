@@ -1,11 +1,11 @@
 function createSubmitScript(outputFilename, jobName, quotedLogFile, quotedScriptName, ...
-    environmentVariables, additionalSubmitArgs, jobArrayString)
+    environmentVariables, additionalSubmitArgs, taskId, clazz, jobArrayString)
 % Create a script that sets the correct environment variables and then
 % executes the Netbatch nbjob command.
 
 % Copyright 2010-2021 The MathWorks, Inc.
 
-if nargin < 7
+if nargin < 9
     jobArrayString = [];
 end
 
@@ -28,7 +28,7 @@ end
 
 % Generate the command to run and write it.
 commandToRun = getSubmitString(jobName, quotedLogFile, quotedScriptName, ...
-    additionalSubmitArgs, jobArrayString);
+    additionalSubmitArgs, taskId, clazz, jobArrayString);
 fprintf(fid, '%s\n', commandToRun);
 
 % Close the file

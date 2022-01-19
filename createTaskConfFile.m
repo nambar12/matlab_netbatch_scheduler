@@ -1,15 +1,8 @@
-function createSubmitScript(outputFilename, jobName, quotedLogFile, quotedScriptName, ...
-    environmentVariables, additionalSubmitArgs, jobArrayString)
-% Create a script that sets the correct environment variables and then
-% executes the Netbatch nbjob command.
+function createTaskConfFile(outputFilename, remoteQueue, remoteQslot)
+% Create the task configuration file to be loaded to the feeder
 
-% Copyright 2010-2021 The MathWorks, Inc.
 
-if nargin < 7
-    jobArrayString = [];
-end
-
-dctSchedulerMessage(5, '%s: Creating submit script for %s at %s', mfilename, jobName, outputFilename);
+dctSchedulerMessage(5, '%s: Creating task configuration file %s at %s', mfilename, outputFilename);
 
 % Open file in binary mode to make it cross-platform.
 fid = fopen(outputFilename, 'w');
@@ -18,18 +11,13 @@ if fid < 0
         'Failed to open file %s for writing', outputFilename);
 end
 
-% Specify Shell to use
-fprintf(fid, '#!/bin/sh\n');
-
-% Write the commands to set and export environment variables
-for ii = 1:size(environmentVariables, 1)
-    fprintf(fid, 'export %s=''%s''\n', environmentVariables{ii,1}, environmentVariables{ii,2});
-end
-
-% Generate the command to run and write it.
-commandToRun = getSubmitString(jobName, quotedLogFile, quotedScriptName, ...
-    additionalSubmitArgs, jobArrayString);
-fprintf(fid, '%s\n', commandToRun);
+fprintf(fid, 'JobsTask {\n');
+fprintf(fid, '  Queue %s {\n', remoteQueue);
+fprintf(fid, '    Qslot %s\n', remoteQslot);
+fprintf(fid, '  }\n');
+fprintf(fid, '  Jobs {\n');
+fprintf(fid, '  }\n');
+fprintf(fid, '}\n');
 
 % Close the file
 fclose(fid);
