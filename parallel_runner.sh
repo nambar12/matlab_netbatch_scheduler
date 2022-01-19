@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # RSN: TODO: Remove hardcoded path (i.e., R2021a) to hydra_pmi_proxy
+#            Are we sure the removing " for all input args is safe?
 # RSN: TODO: Comment (1) -x and (2) hydra_pmi_proxy
 
 for arg do
