@@ -19,12 +19,12 @@ decodeFunction = 'parallel.cluster.generic.communicatingDecodeFcn';
 
 if ~cluster.HasSharedFilesystem
     error('parallelexamples:GenericNetbatch:NotSharedFileSystem', ...
-        'The function %s is for use with shared filesystems.', currFilename)
+          'The function %s is for use with shared filesystems.', currFilename)
 end
 
 if ~strcmpi(cluster.OperatingSystem, 'unix')
-        error('parallelexamples:GenericNetbatch:UnsupportedOS', ...
-            'The function %s only supports clusters with unix OS.', currFilename)
+    error('parallelexamples:GenericNetbatch:UnsupportedOS', ...
+          'The function %s only supports clusters with unix OS.', currFilename)
 end
 
 
@@ -76,48 +76,6 @@ variables = {'PARALLEL_SERVER_DECODE_FUNCTION', decodeFunction; ...
 
 % The local job directory
 localJobDirectory = cluster.getJobFolder(job);
-
-% generate task configuration file
-remoteQueue = cluster.AdditionalProperties.RemoteQueue;
-remoteQslot = cluster.AdditionalProperties.RemoteQslot;
-jsl = environmentProperties.StorageLocation;
-sidx = strfind(jsl,'{');
-eidx = strfind(jsl,'}');
-folder = environmentProperties.StorageLocation(sidx(end)+1:eidx(end)-1);
-outputFilename = [folder '/' environmentProperties.JobLocation '/task.conf'];
-createTaskConfFile(outputFilename, remoteQueue, remoteQslot);
-
-feederName = getFeederName();
-commandToRun = ['nbfeeder start --join --name ' feederName];
-try
-    % Make the shelled out call to run the command.
-    [cmdFailed, cmdOut] = runSchedulerCommand(commandToRun);
-catch err
-    cmdFailed = true;
-    cmdOut = err.message;
-end
-if cmdFailed
-    error('parallelexamples:GenericNetbatch:CreateFeeder', ...
-        'Failed to create feeder with the following message:\n%s', cmdOut);
-end
-
-
-commandToRun = ['nbtask load --target ' feederName ' ' outputFilename];
-try
-    % Make the shelled out call to run the command.
-    [cmdFailed, cmdOut] = runSchedulerCommand(commandToRun);
-catch err
-    cmdFailed = true;
-    cmdOut = err.message;
-end
-if cmdFailed
-    error('parallelexamples:GenericNetbatch:TaskLoadFailed', ...
-        'Task load failed with the following message:\n%s', cmdOut);
-end
-
-taskId = extractTaskId(cmdOut);
-
-
 % Specify the job wrapper script to use.
 if isprop(cluster.AdditionalProperties, 'UseSmpd') && cluster.AdditionalProperties.UseSmpd
     scriptName = 'communicatingJobWrapperSmpd.sh';
@@ -136,6 +94,16 @@ dctSchedulerMessage(5, '%s: Using %s as log file', currFilename, quotedLogFile);
 
 jobName = sprintf('Job%d', job.ID);
 
+taskId = initializeNetbatch(cluster, environmentProperties.StorageLocation);
+
+if isprop(cluster.AdditionalProperties, 'MachineClass') ...
+        && (ischar(cluster.AdditionalProperties.MachineClass) || isstring(cluster.AdditionalProperties.MachineClass))
+    machineClass = cluster.AdditionalProperties.MachineClass;
+else
+    error('parallelexamples:GenericNetbatch:IncorrectArguments', ...
+          'MachineClass must be a character string');
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CUSTOMIZATION MAY BE REQUIRED %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -152,7 +120,7 @@ end
 % Create a script to submit a Netbatch job - this will be created in the job directory
 dctSchedulerMessage(5, '%s: Generating script for task.', currFilename);
 localScriptName = tempname(localJobDirectory);
-machineClass = cluster.AdditionalProperties.MachineClass;
+
 createSubmitScript(localScriptName, jobName, quotedLogFile, quotedScriptName, ...
     variables, additionalSubmitArgs, taskId, machineClass);
 % Create the command to run
