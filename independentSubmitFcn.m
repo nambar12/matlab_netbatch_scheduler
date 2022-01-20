@@ -20,12 +20,12 @@ decodeFunction = 'parallel.cluster.generic.independentDecodeFcn';
 
 if ~cluster.HasSharedFilesystem
     error('parallelexamples:GenericNetbatch:NotSharedFileSystem', ...
-        'The function %s is for use with shared filesystems.', currFilename)
+          'The function %s is for use with shared filesystems.', currFilename)
 end
 
 if ~strcmpi(cluster.OperatingSystem, 'unix')
     error('parallelexamples:GenericNetbatch:UnsupportedOS', ...
-        'The function %s only supports clusters with unix OS.', currFilename)
+          'The function %s only supports clusters with unix OS.', currFilename)
 end
 
 [useJobArrays, maxJobArraySize] = iGetJobArrayProps(cluster);
@@ -81,51 +81,21 @@ variables = {'PARALLEL_SERVER_DECODE_FUNCTION', decodeFunction; ...
 % The local job directory
 localJobDirectory = cluster.getJobFolder(job);
 
-% generate task configuration file
-remoteQueue = cluster.AdditionalProperties.RemoteQueue;
-remoteQslot = cluster.AdditionalProperties.RemoteQslot;
-jsl = environmentProperties.StorageLocation;
-sidx = strfind(jsl,'{');
-eidx = strfind(jsl,'}');
-folder = environmentProperties.StorageLocation(sidx(end)+1:eidx(end)-1);
-outputFilename = [folder '/' environmentProperties.JobLocation '/task.conf'];
-createTaskConfFile(outputFilename, remoteQueue, remoteQslot);
-
-feederName = getFeederName();
-commandToRun = ['nbfeeder start --join --name ' feederName];
-try
-    % Make the shelled out call to run the command.
-    [cmdFailed, cmdOut] = runSchedulerCommand(commandToRun);
-catch err
-    cmdFailed = true;
-    cmdOut = err.message;
-end
-if cmdFailed
-    error('parallelexamples:GenericNetbatch:CreateFeeder', ...
-        'Failed to create feeder with the following message:\n%s', cmdOut);
-end
-
-
-commandToRun = ['nbtask load --target ' feederName ' ' outputFilename];
-try
-    % Make the shelled out call to run the command.
-    [cmdFailed, cmdOut] = runSchedulerCommand(commandToRun);
-catch err
-    cmdFailed = true;
-    cmdOut = err.message;
-end
-if cmdFailed
-    error('parallelexamples:GenericNetbatch:TaskLoadFailed', ...
-        'Task load failed with the following message:\n%s', cmdOut);
-end
-
-taskId = extractTaskId(cmdOut);
-
 % The script name is independentJobWrapper.sh
 scriptName = 'independentJobWrapper.sh';
 % The wrapper script is in the same directory as this file
 dirpart = fileparts(mfilename('fullpath'));
 quotedScriptName = sprintf('%s%s%s', quote, fullfile(dirpart, scriptName), quote);
+
+taskId = initializeNetbatch(cluster, environmentProperties.StorageLocation);
+
+if isprop(cluster.AdditionalProperties, 'MachineClass') ...
+        && (ischar(cluster.AdditionalProperties.MachineClass) || isstring(cluster.AdditionalProperties.MachineClass))
+    machineClass = cluster.AdditionalProperties.MachineClass;
+else
+    error('parallelexamples:GenericNetbatch:IncorrectArguments', ...
+          'MachineClass must be a character string');
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CUSTOMIZATION MAY BE REQUIRED %%
@@ -184,7 +154,7 @@ if useJobArrays
         % will be created in the job directory
         dctSchedulerMessage(5, '%s: Generating script for job array %i', currFilename, ii);
         commandsToRun{ii} = iGetCommandToRun(localJobDirectory, jobName, ...
-            quotedLogFile, quotedScriptName, environmentVariables, additionalSubmitArgs, taskId, jobArrayString);
+            quotedLogFile, quotedScriptName, environmentVariables, additionalSubmitArgs, taskId, machineClass, jobArrayString);
     end
 else
     % Do not use job arrays and submit each task individually.
@@ -212,7 +182,7 @@ else
         % the job directory
         dctSchedulerMessage(5, '%s: Generating script for task %i', currFilename, ii);
         commandsToRun{ii} = iGetCommandToRun(localJobDirectory, jobName, ...
-            quotedLogFile, quotedScriptName, environmentVariables, additionalSubmitArgs, taskId);
+            quotedLogFile, quotedScriptName, environmentVariables, additionalSubmitArgs, taskId, machineClass);
     end
 end
 
@@ -321,13 +291,12 @@ useJobArrays = true;
 maxJobArraySize = str2double(tokens{1});
 
 function commandToRun = iGetCommandToRun(localJobDirectory, jobName, ...
-    quotedLogFile, quotedScriptName, environmentVariables, additionalSubmitArgs, taskId, jobArrayString)
-if nargin < 8
+    quotedLogFile, quotedScriptName, environmentVariables, additionalSubmitArgs, taskId, machineClass, jobArrayString)
+if nargin < 9
     jobArrayString = [];
 end
 
 localScriptName = tempname(localJobDirectory);
-machineClass = cluster.AdditionalProperties.MachineClass;
 createSubmitScript(localScriptName, jobName, quotedLogFile, quotedScriptName, ...
     environmentVariables, additionalSubmitArgs, taskId, machineClass, jobArrayString);
 % Create the command to run
