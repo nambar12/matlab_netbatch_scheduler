@@ -35,7 +35,7 @@ createTaskConfFile(outputFilename, remoteQueue, remoteQslot);
 feederName = getFeederName();
 
 % Start feeder
-commandToRun = ['nbfeeder start --join --name ' feederName];
+commandToRun = sprintf('nbfeeder start --join --name %s', feederName);
 try
     % Make the shelled out call to run the command.
     [cmdFailed, cmdOut] = runSchedulerCommand(commandToRun);
@@ -49,7 +49,7 @@ if cmdFailed
 end
 
 % Load configuration file
-commandToRun = ['nbtask load --target ' feederName ' ' outputFilename];
+commandToRun = sprintf('nbtask load --target %s %s', feederName, outputFilename);
 try
     % Make the shelled out call to run the command.
     [cmdFailed, cmdOut] = runSchedulerCommand(commandToRun);
