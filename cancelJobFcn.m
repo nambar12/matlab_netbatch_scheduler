@@ -30,11 +30,11 @@ end
 % the scheduler.
 schedulerIDs = getSimplifiedSchedulerIDsForJob(job);
 erroredJobAndCauseStrings = cell(size(schedulerIDs));
+feederName = getFeederName();
 % Get the cluster to delete the job
 for ii = 1:length(schedulerIDs)
     schedulerID = schedulerIDs{ii};
-    %% RSN: TODO: Extract "target" name.  Don't hardcode 'matlab'.
-    commandToRun = sprintf('nbjob remove --target matlab %d', schedulerID);
+    commandToRun = sprintf('nbjob remove --target %s %d', feederName, schedulerID);
     dctSchedulerMessage(4, '%s: Canceling job on cluster using command:\n\t%s.', currFilename, commandToRun);
     try
         % Make the shelled out call to run the command.

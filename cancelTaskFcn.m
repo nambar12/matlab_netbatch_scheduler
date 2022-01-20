@@ -37,8 +37,8 @@ end
 % Get the cluster to delete the task
 schedulerID = task.SchedulerID;
 erroredTaskAndCauseString = '';
-%% RSN: TODO: Extract "target" name.  Don't hardcode 'matlab'.
-commandToRun = sprintf('nbjob remove --target matlab %d', jobID);
+feederName = getFeederName();
+commandToRun = sprintf('nbjob remove --target %s %d', feederName, schedulerID);
 dctSchedulerMessage(4, '%s: Canceling task on cluster using command:\n\t%s.', currFilename, commandToRun);
 try
     % Make the shelled out call to run the command.
