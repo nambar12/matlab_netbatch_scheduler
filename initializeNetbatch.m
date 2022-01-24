@@ -1,4 +1,4 @@
-function taskId = initializeNetbatch(cluster, jsl)
+function taskId = initializeNetbatch(cluster, jsl, jobfolder)
 % Initializes the Netbatch cluster
 %  TASKID = INITIALIZENETBATCH(CLUSTER, JSL) initializes the Netbatch cluster, based on the
 %  RemoteQueue (CLUSTER), RemoteQslot (CLUSTER), and JobStorageLocation (JSL).  Steps include:
@@ -28,7 +28,7 @@ end
 tokens = regexp(jsl, '\{(.*?)\}', 'tokens');
 % Extract the second token (UNIX, not PC)
 folder = tokens{2};
-outputFilename = [folder '/' environmentProperties.JobLocation '/task.conf'];
+outputFilename = [folder{1} '/' jobfolder '/task.conf'];
 createTaskConfFile(outputFilename, remoteQueue, remoteQslot);
 
 % Create feeder name
