@@ -87,7 +87,7 @@ scriptName = 'independentJobWrapper.sh';
 dirpart = fileparts(mfilename('fullpath'));
 quotedScriptName = sprintf('%s%s%s', quote, fullfile(dirpart, scriptName), quote);
 
-taskId = initializeNetbatch(cluster, environmentProperties.StorageLocation);
+taskId = initializeNetbatch(cluster, environmentProperties.StorageLocation, environmentProperties.JobLocation);
 
 if isprop(cluster.AdditionalProperties, 'MachineClass') ...
         && (ischar(cluster.AdditionalProperties.MachineClass) || isstring(cluster.AdditionalProperties.MachineClass))

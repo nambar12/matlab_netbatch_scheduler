@@ -94,7 +94,7 @@ dctSchedulerMessage(5, '%s: Using %s as log file', currFilename, quotedLogFile);
 
 jobName = sprintf('Job%d', job.ID);
 
-taskId = initializeNetbatch(cluster, environmentProperties.StorageLocation);
+taskId = initializeNetbatch(cluster, environmentProperties.StorageLocation, environmentProperties.JobLocation);
 
 if isprop(cluster.AdditionalProperties, 'MachineClass') ...
         && (ischar(cluster.AdditionalProperties.MachineClass) || isstring(cluster.AdditionalProperties.MachineClass))
