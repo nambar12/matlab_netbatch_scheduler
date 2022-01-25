@@ -12,7 +12,7 @@ function submitString = getSubmitString(jobName, quotedLogFile, quotedCommand, .
 %{
 %% RSN: TODO: Add support for JAs later.
 if ~isempty(jobArrayString)
-    jobArrayString = strcat('[', jobArrayString, ']');
+    jobName = strcat(jobName, '[', jobArrayString, ']');
 end
 %}
 
