@@ -28,16 +28,18 @@ if ~strcmpi(cluster.OperatingSystem, 'unix')
 end
 
 
+% Determine the debug setting. Setting to true makes the MATLAB workers
+% output additional logging. If EnableDebug is set in the cluster object's
+% AdditionalProperties, that takes precedence. Otherwise, look for the
+% PARALLEL_SERVER_DEBUG and MDCE_DEBUG environment variables in that order.
+% If nothing is set, debug is false.
 enableDebug = 'false';
-
-% cluster.AdditionalProperties.EnableDebug overrides any local debug
-% environment variables on the client
 if isprop(cluster.AdditionalProperties, 'EnableDebug') ...
-        && islogical(cluster.AdditionalProperties.EnableDebug) ...
-        && cluster.AdditionalProperties.EnableDebug
-    enableDebug = 'true';
+        && islogical(cluster.AdditionalProperties.EnableDebug)
+    % Use AdditionalProperties.EnableDebug, if it is set
+    enableDebug = char(string(cluster.AdditionalProperties.EnableDebug));
 else
-    % Local client environment variables to check for debug settings
+    % Otherwise check the environment variables set locally on the client
     environmentVariablesToCheck = {'PARALLEL_SERVER_DEBUG', 'MDCE_DEBUG'};
     for idx = 1:numel(environmentVariablesToCheck)
         debugValue = getenv(environmentVariablesToCheck{idx});
@@ -70,7 +72,7 @@ variables = {'PARALLEL_SERVER_DECODE_FUNCTION', decodeFunction; ...
     'MLM_WEB_ID', environmentProperties.LicenseWebID; ...
     'PARALLEL_SERVER_LICENSE_NUMBER', environmentProperties.LicenseNumber; ...
     'PARALLEL_SERVER_STORAGE_LOCATION', environmentProperties.StorageLocation; ...
-    'PARALLEL_SERVER_CMR', cluster.ClusterMatlabRoot; ...
+    'PARALLEL_SERVER_CMR', strip(cluster.ClusterMatlabRoot, 'right', '/'); ...
     'PARALLEL_SERVER_TOTAL_TASKS', num2str(environmentProperties.NumberOfTasks); ...
     'PARALLEL_SERVER_NUM_THREADS', num2str(cluster.NumThreads)};
 
@@ -120,7 +122,6 @@ end
 % Create a script to submit a Netbatch job - this will be created in the job directory
 dctSchedulerMessage(5, '%s: Generating script for task.', currFilename);
 localScriptName = tempname(localJobDirectory);
-
 createSubmitScript(localScriptName, jobName, quotedLogFile, quotedScriptName, ...
     variables, additionalSubmitArgs, taskId, machineClass);
 % Create the command to run
