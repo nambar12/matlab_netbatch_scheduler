@@ -14,7 +14,7 @@ PARALLEL_SERVER_MATLAB_ARGS=${PARALLEL_SERVER_MATLAB_ARGS:="${MDCE_MATLAB_ARGS}"
 
 : <<EOF
 # RSN: TODO: Add support for JAs later.
-if [ ! -z "${LSB_JOBINDEX}" ] && [ "${LSB_JOBINDEX}" -ne "0" ]; then
+if [ ! -z "${LSB_JOBINDEX}" ] && [ "${LSB_JOBINDEX}" -ne "0" ] ; then
     # Use job arrays
     export PARALLEL_SERVER_TASK_LOCATION="${PARALLEL_SERVER_JOB_LOCATION}/Task${LSB_JOBINDEX}";
 fi

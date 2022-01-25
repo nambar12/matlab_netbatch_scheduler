@@ -42,7 +42,7 @@ SSH_COMMAND="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 # by Netbatch.
 manipulateHosts() {
     # Make sure we don't execute the body of this function more than once
-    if [ "${SMPD_HOSTS:-UNSET}" = "UNSET" ]; then
+    if [ "${SMPD_HOSTS:-UNSET}" = "UNSET" ] ; then
         echo "Calculating SMPD_HOSTS and MACHINE_ARG"
 
         # LSB_MCPU_HOSTS is a series of hostnames and numbers, we need to pick
@@ -55,7 +55,7 @@ manipulateHosts() {
         # Loop over every entry in LSB_MCPU_HOSTS
         for x in ${LSB_MCPU_HOSTS}
           do
-          if [ ${isHost} -eq 1 ]; then
+          if [ ${isHost} -eq 1 ] ; then
               # every other entry is a hostname
               SMPD_HOSTS="${SMPD_HOSTS} ${x}"
               NUM_PM_HOSTS=`expr 1 + ${NUM_PM_HOSTS}`
@@ -111,7 +111,7 @@ launchSmpds() {
       echo ${SSH_COMMAND} $host \"${FULL_SMPD}\" -s -phrase MATLAB -port ${SMPD_PORT}
       ${SSH_COMMAND} $host \"${FULL_SMPD}\" -s -phrase MATLAB -port ${SMPD_PORT}
       ssh_return=${?}
-      if [ ${ssh_return} -ne 0 ]; then
+      if [ ${ssh_return} -ne 0 ] ; then
           echo "Launching smpd failed for node: ${host}"
           exit 1
       else
@@ -136,7 +136,7 @@ runMpiexec() {
     eval $CMD
 
     MPIEXEC_CODE=${?}
-    if [ ${MPIEXEC_CODE} -ne 0 ]; then
+    if [ ${MPIEXEC_CODE} -ne 0 ] ; then
         exit ${MPIEXEC_CODE}
     fi
 }
