@@ -30,9 +30,10 @@ jobInTerminalState = strcmp(state, 'finished') || strcmp(state, 'failed');
 if jobInTerminalState
     return
 end
-% "jobid==<number>||jobid==<number2>"
 [schedulerIDs, numSubmittedTasks] = getSimplifiedSchedulerIDsForJob(job);
+
 %% RSN: TODO: Check if we need to parse this differently
+%%            "jobid==<number>||jobid==<number2>"
 %%            ids = sprintf('jobid==%d||', jobIDs{:});
 %%            ids(end-1:end) = [];
 feederName = getFeederName();
