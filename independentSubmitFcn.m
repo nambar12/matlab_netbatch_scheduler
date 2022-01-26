@@ -87,7 +87,8 @@ scriptName = 'independentJobWrapper.sh';
 dirpart = fileparts(mfilename('fullpath'));
 quotedScriptName = sprintf('%s%s%s', quote, fullfile(dirpart, scriptName), quote);
 
-taskId = initializeNetbatch(cluster, environmentProperties.StorageLocation, environmentProperties.JobLocation);
+jn = sprintf('Job%d', job.ID);
+taskId = initializeNetbatch(cluster, environmentProperties.StorageLocation, environmentProperties.JobLocation, jn);
 
 if isprop(cluster.AdditionalProperties, 'MachineClass') ...
         && (ischar(cluster.AdditionalProperties.MachineClass) || isstring(cluster.AdditionalProperties.MachineClass))
@@ -100,8 +101,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CUSTOMIZATION MAY BE REQUIRED %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% RSN: TODO: Can we hardcode this to 1 or remove entirely?  Check with NumThreads>1.
-additionalSubmitArgs = sprintf('--class-reservation cores=%d', environmentProperties.NumberOfTasks);
+additionalSubmitArgs = sprintf('--class-reservation cores=%d', cluster.NumThreads);
 commonSubmitArgs = getCommonSubmitArgs(cluster);
 if ~isempty(commonSubmitArgs) && ischar(commonSubmitArgs)
     additionalSubmitArgs = strtrim([additionalSubmitArgs, ' ', commonSubmitArgs]);

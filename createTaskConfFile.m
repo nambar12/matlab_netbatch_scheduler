@@ -1,7 +1,6 @@
-function createTaskConfFile(outputFilename, remoteQueue, remoteQslot)
+function createTaskConfFile(outputFilename, remoteQueue, remoteQslot, jobName)
 % Create the task configuration file to be loaded to the feeder
 
-%% RSN: TODO: Add jobName later
 % dctSchedulerMessage(5, '%s: Creating task configuration file for %s at %s', mfilename, jobName, outputFilename);
 dctSchedulerMessage(5, '%s: Creating task configuration file at %s', mfilename, outputFilename);
 
@@ -12,7 +11,7 @@ if fid < 0
           'Failed to open file %s for writing', outputFilename);
 end
 
-fprintf(fid, 'JobsTask {\n');
+fprintf(fid, 'JobsTask %s {\n', jobName);
 fprintf(fid, '  Queue %s {\n', remoteQueue);
 fprintf(fid, '    Qslot %s\n', remoteQslot);
 fprintf(fid, '  }\n');

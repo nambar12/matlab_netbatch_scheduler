@@ -1,8 +1,12 @@
 #!/bin/bash
 
-# RSN: TODO: Remove hardcoded path (i.e., R2021a) to hydra_pmi_proxy
-#            Are we sure the removing " for all input args is safe?
-# RSN: TODO: Comment (1) -x and (2) hydra_pmi_proxy
+# since ssh is the default launcher, mpiexec use -x when running it
+# get rid of it since we don't need it when running the nbjob prun command
+#
+# Also, ssh launcher adds quotes to the 1st arg - hydra_pmi_proxy.
+# The ssh command escapes these qoutes. This creates bad command for the
+# nbjob prun so need to remove the quotes from all arguments
+#
 
 for arg do
     shift

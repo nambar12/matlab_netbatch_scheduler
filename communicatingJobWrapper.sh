@@ -19,6 +19,16 @@
 
 # Copyright 2006-2021 The MathWorks, Inc.
 
+
+# get dir name of the current script
+DIRNAME='/usr/bin/dirname'
+BASENAME='/bin/basename'
+if [ ! -x "$BASENAME" ]; then
+      BASENAME='/usr/bin/basename'
+fi
+BIN_DIR=`$DIRNAME "${BASH_SOURCE[0]}"`
+
+
 # If PARALLEL_SERVER_ environment variables are not set, assign any
 # available values with form MDCE_ for backwards compatibility
 PARALLEL_SERVER_CMR=${PARALLEL_SERVER_CMR:="${MDCE_CMR}"}
@@ -47,9 +57,8 @@ export HOSTNAME=`echo ${NB_PARALLEL_JOB_HOSTS} | awk '{print $1}'`
 # instead of the below line, loop over all hosts and run: nbjob prun --host <host> $CMD
 #
 # RSN: TODO: Describe the need to create an exec launcher
-# RSN: TODO: Move parallel_runner.sh to a proper location
 #
-CMD="\"${FULL_MPIEXEC}\" -bind-to core ${MPI_VERBOSE} -launcher-exec /nfs/iil/disks/iec_sws10/nambar/MatLabNetbatchScheduler/mdcs_scripts/parallel_runner.sh -hosts ${HOSTS} \"${PARALLEL_SERVER_MATLAB_EXE}\" ${PARALLEL_SERVER_MATLAB_ARGS}"
+CMD="\"${FULL_MPIEXEC}\" -bind-to core ${MPI_VERBOSE} -launcher-exec ${BIN_DIR}/parallel_runner.sh -hosts ${HOSTS} \"${PARALLEL_SERVER_MATLAB_EXE}\" ${PARALLEL_SERVER_MATLAB_ARGS}"
 
 # Echo the command so that it is shown in the output log.
 echo $CMD

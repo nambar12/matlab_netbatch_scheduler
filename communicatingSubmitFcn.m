@@ -96,7 +96,7 @@ dctSchedulerMessage(5, '%s: Using %s as log file', currFilename, quotedLogFile);
 
 jobName = sprintf('Job%d', job.ID);
 
-taskId = initializeNetbatch(cluster, environmentProperties.StorageLocation, environmentProperties.JobLocation);
+taskId = initializeNetbatch(cluster, environmentProperties.StorageLocation, environmentProperties.JobLocation, jobName);
 
 if isprop(cluster.AdditionalProperties, 'MachineClass') ...
         && (ischar(cluster.AdditionalProperties.MachineClass) || isstring(cluster.AdditionalProperties.MachineClass))
@@ -112,8 +112,9 @@ end
 % You may wish to customize this section to match your cluster,
 % for example if you wish to limit the number of nodes that
 % can be used for a single job.
-%% RSN: TODO: Don't hardcode slots_per_host
-additionalSubmitArgs = sprintf('--parallel slots=%d,slots_per_host=1', environmentProperties.NumberOfTasks+1);
+%% RSN: TODO: Don't hardcode slots_per_host use PPN instead
+ppn = 1;
+additionalSubmitArgs = sprintf('--class-reservation cores=%d --parallel slots=%d,slots_per_host=%d', cluster.NumThreads, environmentProperties.NumberOfTasks+1, ppn);
 dctSchedulerMessage(4, '%s: Requesting %d slots.', currFilename, environmentProperties.NumberOfTasks);
 commonSubmitArgs = getCommonSubmitArgs(cluster);
 if ~isempty(commonSubmitArgs) && ischar(commonSubmitArgs)
