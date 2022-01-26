@@ -112,8 +112,13 @@ end
 % You may wish to customize this section to match your cluster,
 % for example if you wish to limit the number of nodes that
 % can be used for a single job.
-%% RSN: TODO: Don't hardcode slots_per_host use PPN instead
-ppn = 1;
+if isprop(cluster.AdditionalProperties, 'MachineClass') && isnumeric(cluster.AdditionalProperties.ProcsPerNode)
+    ppn = cluster.AdditionalProperties.ProcsPerNode;
+else
+    %% RSN: TODO: Instead of an error, should we assign PPN a default value?
+    error('parallelexamples:GenericNetbatch:IncorrectArguments', ...
+          'ProcsPerNode must be a numeric scalar');
+end
 additionalSubmitArgs = sprintf('--class-reservation cores=%d --parallel slots=%d,slots_per_host=%d', cluster.NumThreads, environmentProperties.NumberOfTasks+1, ppn);
 dctSchedulerMessage(4, '%s: Requesting %d slots.', currFilename, environmentProperties.NumberOfTasks);
 commonSubmitArgs = getCommonSubmitArgs(cluster);
