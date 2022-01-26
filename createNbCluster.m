@@ -3,12 +3,12 @@ function c = createNbCluster
 % Create generic cluster profile
 c = parallel.cluster.Generic;
 c.IntegrationScriptsLocation = pwd;
-c.NumWorkers = 1000;
+c.NumWorkers = 192;
 c.NumThreads = 4;
 c.OperatingSystem = 'unix';
 c.HasSharedFilesystem = true;
 jsl = fullfile(getenv('HOME'),'jsl');
-if ~exist(jsl)
+if exist(jsl,'dir')~=7
     mkdir(jsl)
 end
 c.JobStorageLocation = jsl;
@@ -21,6 +21,3 @@ c.saveAsProfile('netbatch')
 c.saveProfile('Description', 'netbatch')
 
 end
-
-% p = c.parpool(16);
-
