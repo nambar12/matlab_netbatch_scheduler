@@ -38,7 +38,7 @@ end
 schedulerID = task.SchedulerID;
 erroredTaskAndCauseString = '';
 feederName = getFeederName();
-commandToRun = sprintf('nbjob remove --target %s %d', feederName, schedulerID);
+commandToRun = sprintf('nbjob remove --target %s %s', feederName, schedulerID);
 dctSchedulerMessage(4, '%s: Canceling task on cluster using command:\n\t%s.', currFilename, commandToRun);
 try
     % Make the shelled out call to run the command.
