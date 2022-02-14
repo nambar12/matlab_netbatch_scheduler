@@ -34,7 +34,7 @@ feederName = getFeederName();
 % Get the cluster to delete the job
 for ii = 1:length(schedulerIDs)
     schedulerID = schedulerIDs{ii};
-    commandToRun = sprintf('nbjob remove --target %s %d', feederName, schedulerID);
+    commandToRun = sprintf('nbjob remove --target %s %s', feederName, schedulerID);
     dctSchedulerMessage(4, '%s: Canceling job on cluster using command:\n\t%s.', currFilename, commandToRun);
     try
         % Make the shelled out call to run the command.
