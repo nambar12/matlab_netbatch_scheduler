@@ -19,11 +19,11 @@ if exist(jsl,'dir')~=7
     mkdir(jsl)
 end
 c.JobStorageLocation = jsl;
-c.AdditionalProperties.UseSmpd = false;
-c.AdditionalProperties.RemoteQueue = 'iil_critical';
-c.AdditionalProperties.RemoteQslot = '/admin/nambar';
 c.AdditionalProperties.MachineClass = 'SLES12&&4C';
 c.AdditionalProperties.ProcsPerNode = 2;
+c.AdditionalProperties.RemoteQslot = '/admin/nambar';
+c.AdditionalProperties.RemoteQueue = 'iil_critical';
+c.AdditionalProperties.UseSmpd = false;
 c.saveAsProfile(profile)
 c.saveProfile('Description', profile)
 
