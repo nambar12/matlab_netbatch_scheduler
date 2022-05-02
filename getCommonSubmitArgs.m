@@ -19,3 +19,5 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % You may wish to support further cluster.AdditionalProperties fields here
 % and modify the submission command arguments accordingly.
+
+%commonSubmitArgs = sprintf('%s --class-reservation matlab_parallel_server_licenses=%d', numWorkers);
