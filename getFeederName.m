@@ -13,6 +13,11 @@ user = getenv(var);
 if isempty(user)
     error('Failed to get username.')
 end
-feederName = [getenv(var) '_matlab'];
+[FAILED,hn] = system('hostname');
+if FAILED
+    error('Failed to get hostname.\n%s', hn)
+end
+
+feederName = [user '_' strtrim(hn) '_matlab'];
 
 end
