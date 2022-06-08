@@ -115,7 +115,6 @@ end
 if isprop(cluster.AdditionalProperties, 'MachineClass') && isnumeric(cluster.AdditionalProperties.ProcsPerNode)
     ppn = cluster.AdditionalProperties.ProcsPerNode;
 else
-    %% RSN: TODO: Instead of an error, should we assign PPN a default value?
     error('parallelexamples:GenericNetbatch:IncorrectArguments', ...
           'ProcsPerNode must be a numeric scalar');
 end

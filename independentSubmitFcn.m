@@ -35,16 +35,18 @@ if useJobArrays
     cluster.UserData.MaxJobArraySize = maxJobArraySize;
 end
 
+% Determine the debug setting. Setting to true makes the MATLAB workers
+% output additional logging. If EnableDebug is set in the cluster object's
+% AdditionalProperties, that takes precedence. Otherwise, look for the
+% PARALLEL_SERVER_DEBUG and MDCE_DEBUG environment variables in that order.
+% If nothing is set, debug is false.
 enableDebug = 'false';
-
-% cluster.AdditionalProperties.EnableDebug overrides any local debug
-% environment variables on the client
 if isprop(cluster.AdditionalProperties, 'EnableDebug') ...
-        && islogical(cluster.AdditionalProperties.EnableDebug) ...
-        && cluster.AdditionalProperties.EnableDebug
-    enableDebug = 'true';
+        && islogical(cluster.AdditionalProperties.EnableDebug)
+    % Use AdditionalProperties.EnableDebug, if it is set
+    enableDebug = char(string(cluster.AdditionalProperties.EnableDebug));
 else
-    % Local client environment variables to check for debug settings
+    % Otherwise check the environment variables set locally on the client
     environmentVariablesToCheck = {'PARALLEL_SERVER_DEBUG', 'MDCE_DEBUG'};
     for idx = 1:numel(environmentVariablesToCheck)
         debugValue = getenv(environmentVariablesToCheck{idx});
