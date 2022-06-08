@@ -64,6 +64,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function state = iExtractJobState(nbstatusOut, numSlaves)
 % Function to extract the job state from the output of nbstatus
+
 % How many Waiting jobs
 numPending = numel(regexp(nbstatusOut, 'Wait'));
 % How many Running jobs
