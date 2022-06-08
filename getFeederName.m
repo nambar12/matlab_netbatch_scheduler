@@ -13,7 +13,7 @@ user = getenv(var);
 if isempty(user)
     error('Failed to get username.')
 end
-[FAILED,hn] = system('hostname');
+[FAILED, hn] = system('hostname');
 if FAILED
     error('Failed to get hostname.\n%s', hn)
 end
