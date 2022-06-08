@@ -2,7 +2,7 @@ function commonSubmitArgs = getCommonSubmitArgs(cluster)
 % Get any additional submit arguments for the Netbatch nbjob command
 % that are common to both independent and communicating jobs.
 
-% Copyright 2016-2021 The MathWorks, Inc.
+% Copyright 2016-2020 The MathWorks, Inc.
 
 commonSubmitArgs = '';
 
@@ -19,5 +19,3 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % You may wish to support further cluster.AdditionalProperties fields here
 % and modify the submission command arguments accordingly.
-
-%commonSubmitArgs = sprintf('%s --class-reservation matlab_parallel_server_licenses=%d', numWorkers);
