@@ -36,7 +36,7 @@ Example:
 % generic cluster for more information.
 cluster = parallel.cluster.Generic('JobStorageLocation', '/home/JOB_STORAGE_LOCATION');
 set(cluster, 'HasSharedFilesystem', true);
-set(cluster, 'PluginScriptsLocation', '<INSTALLATION_DIR>/parallel/netbatch/shared');
+set(cluster, 'PluginScriptsLocation', '<INSTALLATION_DIR>/parallel/netbatch/nonshared');
 set(cluster, 'ClusterMatlabRoot', '/apps/matlab');
 set(cluster, 'OperatingSystem', 'unix');
 
