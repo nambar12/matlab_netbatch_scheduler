@@ -15,7 +15,7 @@
 # PARALLEL_SERVER_JOB_LOCATION        - used by decode function
 #
 # The following environment variables are set by Netbatch:
-# LSB_MCPU_HOSTS - list of hostnames with their associated number of processors allocated to this Netbatch job
+# NB_PARALLEL_JOB_HOSTS - list of hostnames with their associated number of processors allocated to this Netbatch job
 
 # Copyright 2006-2021 The MathWorks, Inc.
 
@@ -52,11 +52,7 @@ fi
 BIN_DIR=`$DIRNAME "${BASH_SOURCE[0]}"`
 
 # Construct the command to run.
-# RSN: TODO: need nbjob comment?  Isn't that in launcher?  Might be the comment for why we're calling exec launcher
-# instead of the below line, loop over all hosts and run: nbjob prun --host <host> $CMD
-#
-# RSN: TODO: Describe the need to create an exec launcher
-#
+# Override default launcher, ssh, with call to 'nbjob prun'.
 CMD="\"${FULL_MPIEXEC}\" -bind-to core ${MPI_VERBOSE} -launcher-exec ${BIN_DIR}/parallel_runner.sh -hosts ${HOSTS} \"${PARALLEL_SERVER_MATLAB_EXE}\" ${PARALLEL_SERVER_MATLAB_ARGS}"
 
 # Echo the command so that it is shown in the output log.
