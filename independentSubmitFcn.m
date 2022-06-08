@@ -87,7 +87,7 @@ scriptName = 'independentJobWrapper.sh';
 dirpart = fileparts(mfilename('fullpath'));
 quotedScriptName = sprintf('%s%s%s', quote, fullfile(dirpart, scriptName), quote);
 
-jobName = sprintf('Job%d', job.ID);
+jobName = sprintf('Job%d-%d', job.ID, round(rand*10000));
 
 taskId = initializeNetbatch(cluster, environmentProperties.StorageLocation, environmentProperties.JobLocation, jobName);
 

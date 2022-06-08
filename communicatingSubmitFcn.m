@@ -94,7 +94,7 @@ logFile = cluster.getLogLocation(job);
 quotedLogFile = sprintf('%s%s%s', quote, logFile, quote);
 dctSchedulerMessage(5, '%s: Using %s as log file', currFilename, quotedLogFile);
 
-jobName = sprintf('Job%d', job.ID);
+jobName = sprintf('Job%d-%d', job.ID, round(rand*10000));
 
 taskId = initializeNetbatch(cluster, environmentProperties.StorageLocation, environmentProperties.JobLocation, jobName);
 
