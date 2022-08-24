@@ -1,12 +1,12 @@
 function nb = createNbCluster(qslot,queue)
 
-profile = 'netbatch';    
+profile = 'netbatch';
 
 % Delete old profile if it exists
 try %#ok<TRYNC>
     parallel.internal.ui.MatlabProfileManager.removeProfile(profile)
 end
-    
+
 % Create generic cluster profile
 nb = parallel.cluster.Generic;
 
