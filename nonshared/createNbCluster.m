@@ -1,30 +1,48 @@
-function c = createNbCluster
+function nb = createNbCluster(qslot,queue)
 
-profile = 'netbatch';    
+profile = 'netbatch';
 
 % Delete old profile if it exists
 try %#ok<TRYNC>
     parallel.internal.ui.MatlabProfileManager.removeProfile(profile)
 end
-    
+
 % Create generic cluster profile
-c = parallel.cluster.Generic;
-c.PluginScriptsLocation = pwd;
-c.HasSharedFilesystem = false;
-c.NumWorkers = 192;
-c.NumThreads = 4;
-c.OperatingSystem = 'unix';
-jsl = fullfile(getenv('HOME'),'jsl');
-if exist(jsl,'dir')~=7
-    mkdir(jsl)
+nb = parallel.cluster.Generic;
+
+rootd = fileparts(prefdir);
+release = ['R' version('-release')];
+jsl = fullfile(rootd,'3p_cluster_jobs',release);
+
+if exist(jsl,'dir')==false
+    [status,err,eid] = mkdir(jsl);
+    if status==false
+        error(eid,'Can''t make directory %s: %s',jsl,err)
+    end
 end
-c.JobStorageLocation = jsl;
-c.AdditionalProperties.MachineClass = 'SLES12&&4C';
-c.AdditionalProperties.ProcsPerNode = 2;
-c.AdditionalProperties.RemoteQslot = '/admin/nambar';
-c.AdditionalProperties.RemoteQueue = 'iil_critical';
-c.AdditionalProperties.UseSmpd = false;
-c.saveAsProfile(profile)
-c.saveProfile('Description', profile)
+
+% MW: Need to fix
+nb.ClusterMatlabRoot = matlabroot;
+nb.HasSharedFilesystem = false;
+nb.JobStorageLocation = jsl;
+nb.NumThreads = 1;
+nb.NumWorkers = 192;
+nb.OperatingSystem = 'unix';
+% MW: Need to fix
+nb.PluginScriptsLocation = pwd;
+
+%% AdditionalProperties
+nb.AdditionalProperties.MachineClass = 'SLES12';
+nb.AdditionalProperties.MemPerCpu = '';
+nb.AdditionalProperties.ProcsPerNode = 1;
+% MW: Need to fix
+nb.AdditionalProperties.RemoteJobStorageLocation = pwd;
+nb.AdditionalProperties.RemoteQslot = qslot;
+nb.AdditionalProperties.RemoteQueue = queue;
+nb.AdditionalProperties.UseSmpd = false;
+
+%% Save profile
+nb.saveAsProfile(profile)
+nb.saveProfile('Description', profile)
 
 end
