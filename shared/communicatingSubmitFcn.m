@@ -112,7 +112,7 @@ end
 % You may wish to customize this section to match your cluster,
 % for example if you wish to limit the number of nodes that
 % can be used for a single job.
-if isprop(cluster.AdditionalProperties, 'MachineClass') && isnumeric(cluster.AdditionalProperties.ProcsPerNode)
+if isprop(cluster.AdditionalProperties, 'ProcsPerNode') && isnumeric(cluster.AdditionalProperties.ProcsPerNode)
     ppn = cluster.AdditionalProperties.ProcsPerNode;
 else
     error('parallelexamples:GenericNetbatch:IncorrectArguments', ...
