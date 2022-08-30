@@ -1,4 +1,12 @@
 function nb = createNbCluster(qslot,queue)
+%CREATENBCLUSTER Create Netbatch profile
+% NB = CREATENBCLUSTER(QSLOT,QUEUE)
+%
+% Copyright 2022 The Mathworks, Inc.
+
+if nargin~=2
+   error('Must provide RemoteQslot and RemoteQueue.')
+end
 
 profile = 'netbatch';
 
@@ -32,7 +40,6 @@ nb.PluginScriptsLocation = pwd;
 %% AdditionalProperties
 nb.AdditionalProperties.MachineClass = 'SLES12';
 nb.AdditionalProperties.MemPerCpu = '';
-nb.AdditionalProperties.ProcsPerNode = 1;
 nb.AdditionalProperties.RemoteQslot = qslot;
 nb.AdditionalProperties.RemoteQueue = queue;
 nb.AdditionalProperties.UseSmpd = false;
