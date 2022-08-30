@@ -104,7 +104,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CUSTOMIZATION MAY BE REQUIRED %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-additionalSubmitArgs = sprintf('--class-reservation cores=%d', cluster.NumThreads);
+additionalSubmitArgs = '';
 commonSubmitArgs = getCommonSubmitArgs(cluster);
 if ~isempty(commonSubmitArgs) && ischar(commonSubmitArgs)
     additionalSubmitArgs = strtrim([additionalSubmitArgs, ' ', commonSubmitArgs]);
