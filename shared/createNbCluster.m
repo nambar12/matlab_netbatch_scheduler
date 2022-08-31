@@ -45,7 +45,7 @@ nb.saveProfile('Description', profile)
 if wasdefault==true
     dp_fh = iGetClusterProfileInfo;
     % Was previously the default profile, so set it back to the default
-    feval(dp_fh(profile))
+    dp_fh(profile)
 end
 
 end
@@ -81,7 +81,7 @@ if any(strcmp(profile,cp))
     parallel.internal.ui.MatlabProfileManager.removeProfile(profile)
 
     % Reset warning
-    warning(state, 'parallel:settings:CollapsedDefaultProfileNoLongerExists')
+    warning(state)
 end
 
 
