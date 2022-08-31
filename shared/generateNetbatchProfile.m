@@ -1,7 +1,6 @@
-function nb = createNbCluster(qslot,queue)
-%function nb = genNetbatchProfile(qslot,queue)
-%GENNETBATCHPROFILE Create Netbatch profile
-% NB = GENNETBATCHPROFILE(QSLOT,QUEUE)
+function nb = generateNetbatchProfile(qslot,queue)
+%GENERATENETBATCHPROFILE Create Netbatch profile
+% NB = GENERATENETBATCHPROFILE(QSLOT,QUEUE)
 %
 % Copyright 2022 The Mathworks, Inc.
 
