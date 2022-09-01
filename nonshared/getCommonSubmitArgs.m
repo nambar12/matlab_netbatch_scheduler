@@ -19,3 +19,13 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % You may wish to support further cluster.AdditionalProperties fields here
 % and modify the submission command arguments accordingly.
+
+% Class Reservation
+class_reservation = sprintf('--class-reservation cores=%d', cluster.NumThreads);
+if isprop(cluster.AdditionalProperties, 'MemPerCpu')
+    memPerCpu = cluster.AdditionalProperties.MemPerCpu;
+    if ~isempty(memPerCpu) && isnumeric(memPerCpu)
+        class_reservation = sprintf('%s,memory=%d', memPerCpu);
+    end
+end
+commonSubmitArgs = strtrim([commonSubmitArgs, ' ' class_reservation]);
