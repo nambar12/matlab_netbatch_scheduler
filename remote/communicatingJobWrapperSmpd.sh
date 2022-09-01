@@ -76,7 +76,7 @@ chooseSmpdHosts() {
 #########################################################################################
 # Work out which port to use for SMPD
 chooseSmpdPort() {
-    # Use Netbatch's LSB_JOBID to calculate the port
+    # Use Netbatch's __NB_JOBID to calculate the port
     ID=`echo ${__NB_JOBID} | cut -f 2 -d.`
     SMPD_PORT=`expr ${ID} % 10000 + 20000`
 }
