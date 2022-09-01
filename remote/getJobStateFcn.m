@@ -33,12 +33,11 @@ end
 remoteConnection = getRemoteConnection(cluster);
 [schedulerIDs, numSubmittedTasks] = getSimplifiedSchedulerIDsForJob(job);
 
-%% RSN: TODO: Check if we need to parse this differently
-%%            "jobid==<number>||jobid==<number2>"
-%%            ids = sprintf('jobid==%d||', jobIDs{:});
-%%            ids(end-1:end) = [];
+% Required format: "jobid==<number>||jobid==<number2>"
+ids = sprintf('jobid==%s||', schedulerIDs{:});
+ids(end-1:end) = [];
 feederName = getFeederName();
-commandToRun = sprintf('nbstatus jobs --target %s --format script --fields jobid,status,exitstatus "%s"', feederName, sprintf('%s ', schedulerIDs{:}));
+commandToRun = sprintf('nbstatus jobs --target %s --format script --fields jobid,status,exitstatus "%s"', feederName, sprintf('%s', ids));
 dctSchedulerMessage(4, '%s: Querying cluster for job state using command:\n\t%s', currFilename, commandToRun);
 
 try
