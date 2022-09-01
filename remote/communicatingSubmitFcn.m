@@ -129,13 +129,7 @@ end
 % You may wish to customize this section to match your cluster,
 % for example if you wish to limit the number of nodes that
 % can be used for a single job.
-if isprop(cluster.AdditionalProperties, 'MachineClass') && isnumeric(cluster.AdditionalProperties.ProcsPerNode)
-    ppn = cluster.AdditionalProperties.ProcsPerNode;
-else
-    error('parallelexamples:GenericNetbatch:IncorrectArguments', ...
-          'ProcsPerNode must be a numeric scalar');
-end
-additionalSubmitArgs = sprintf('--class-reservation cores=%d --parallel slots=%d,slots_per_host=%d', cluster.NumThreads, environmentProperties.NumberOfTasks+1, ppn);
+additionalSubmitArgs = sprintf('--parallel slots=%d', environmentProperties.NumberOfTasks+1);
 dctSchedulerMessage(4, '%s: Requesting %d slots.', currFilename, environmentProperties.NumberOfTasks);
 commonSubmitArgs = getCommonSubmitArgs(cluster);
 if ~isempty(commonSubmitArgs) && ischar(commonSubmitArgs)
