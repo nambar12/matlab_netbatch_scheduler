@@ -45,7 +45,8 @@ catch err
 end
 if cmdFailed
     error('parallelexamples:GenericNetbatch:CreateFeeder', ...
-          'Failed to create feeder with the following message:\n%s', cmdOut);
+          'Failed to create feeder to Netbatch using command:\n\t%s.\nReason: %s', ...
+          commandToRun, cmdOut);
 end
 
 % Load configuration file
@@ -59,8 +60,10 @@ catch err
 end
 if cmdFailed
     error('parallelexamples:GenericNetbatch:TaskLoadFailed', ...
-          'Task load failed with the following message:\n%s', cmdOut);
+          'Failed to load task to Netbatch using command:\n\t%s.\nReason: %s', ...
+          commandToRun, cmdOut);
 end
+
 taskId = extractTaskId(cmdOut);
 
 end
