@@ -33,10 +33,10 @@ end
 [schedulerIDs, numSubmittedTasks] = getSimplifiedSchedulerIDsForJob(job);
 
 % Required format: "jobid==<number>||jobid==<number2>"
-ids = sprintf('jobid==%s||', schedulerIDs{:});
-ids(end-1:end) = [];
+schedulerIDs = sprintf('jobid==%s||', schedulerIDs{:});
+schedulerIDs(end-1:end) = [];
 feederName = getFeederName();
-commandToRun = sprintf('nbstatus jobs --target %s --format script --fields jobid,status,exitstatus "%s"', feederName, sprintf('%s', ids));
+commandToRun = sprintf('nbstatus jobs --target %s --format script --fields jobid,status,exitstatus "%s"', feederName, sprintf('%s', schedulerIDs));
 dctSchedulerMessage(4, '%s: Querying cluster for job state using command:\n\t%s', currFilename, commandToRun);
 
 try
