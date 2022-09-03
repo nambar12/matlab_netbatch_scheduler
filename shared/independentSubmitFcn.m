@@ -6,7 +6,7 @@ function independentSubmitFcn(cluster, job, environmentProperties)
 %
 % See also parallel.cluster.generic.independentDecodeFcn.
 
-% Copyright 2010-2021 The MathWorks, Inc.
+% Copyright 2010-2022 The MathWorks, Inc.
 
 % Store the current filename for the errors, warnings and
 % dctSchedulerMessages.
@@ -41,8 +41,7 @@ end
 % PARALLEL_SERVER_DEBUG and MDCE_DEBUG environment variables in that order.
 % If nothing is set, debug is false.
 enableDebug = 'false';
-if isprop(cluster.AdditionalProperties, 'EnableDebug') ...
-        && islogical(cluster.AdditionalProperties.EnableDebug)
+if isprop(cluster.AdditionalProperties, 'EnableDebug')
     % Use AdditionalProperties.EnableDebug, if it is set
     enableDebug = char(string(cluster.AdditionalProperties.EnableDebug));
 else
@@ -79,6 +78,13 @@ variables = {'PARALLEL_SERVER_DECODE_FUNCTION', decodeFunction; ...
     'MLM_WEB_ID', environmentProperties.LicenseWebID; ...
     'PARALLEL_SERVER_LICENSE_NUMBER', environmentProperties.LicenseNumber; ...
     'PARALLEL_SERVER_STORAGE_LOCATION', environmentProperties.StorageLocation};
+% Environment variable names different prior to 19b
+if verLessThan('matlab', '9.7')
+    variables(:,1) = replace(variables(:,1), 'PARALLEL_SERVER_', 'MDCE_');
+end
+% Trim the environment variables of empty values.
+nonEmptyValues = cellfun(@(x) ~isempty(strtrim(x)), variables(:,2));
+variables = variables(nonEmptyValues, :);
 
 % The local job directory
 localJobDirectory = cluster.getJobFolder(job);
@@ -92,23 +98,14 @@ quotedScriptName = sprintf('%s%s%s', quote, fullfile(dirpart, scriptName), quote
 jobName = sprintf('Job%d-%d', job.ID, round(rand*10000));
 
 taskId = initializeNetbatch(cluster, environmentProperties.StorageLocation, environmentProperties.JobLocation, jobName);
-
-if isprop(cluster.AdditionalProperties, 'MachineClass') ...
-        && (ischar(cluster.AdditionalProperties.MachineClass) || isstring(cluster.AdditionalProperties.MachineClass))
-    machineClass = cluster.AdditionalProperties.MachineClass;
-else
-    error('parallelexamples:GenericNetbatch:IncorrectArguments', ...
-          'MachineClass must be a character string');
-end
+machineClass = validatedPropValue(cluster.AdditionalProperties, 'MachineClass', 'char');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CUSTOMIZATION MAY BE REQUIRED %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 additionalSubmitArgs = '';
 commonSubmitArgs = getCommonSubmitArgs(cluster);
-if ~isempty(commonSubmitArgs) && ischar(commonSubmitArgs)
-    additionalSubmitArgs = strtrim([additionalSubmitArgs, ' ', commonSubmitArgs]);
-end
+additionalSubmitArgs = strtrim(sprintf('%s %s', additionalSubmitArgs, commonSubmitArgs))
 
 % Only keep and submit tasks that are not cancelled. Cancelled tasks
 % will have errors.
@@ -168,8 +165,13 @@ else
     for ii = 1:numberOfTasks
         taskLocation = taskLocations{ii};
         % Add the task location to the environment variables
-        environmentVariables = [variables; ...
-            {'PARALLEL_SERVER_TASK_LOCATION', taskLocation}];
+        if verLessThan('matlab', '9.7') % variable name changed in 19b
+            environmentVariables = [variables; ...
+                {'MDCE_TASK_LOCATION', taskLocation}];
+        else
+            environmentVariables = [variables; ...
+                {'PARALLEL_SERVER_TASK_LOCATION', taskLocation}];
+        end
         
         % Choose a file for the output. Please note that currently,
         % JobStorageLocation refers to a directory on disk, but this may
@@ -189,13 +191,12 @@ else
     end
 end
 
-
 for ii=1:numel(commandsToRun)
     commandToRun = commandsToRun{ii};
     jobIDs{ii} = iSubmitJobUsingCommand(commandToRun, job, logFile);
 end
 
-% Define the schedulerIDs
+% Calculate the schedulerIDs
 if useJobArrays
     % The scheduler ID of each task is a combination of the job ID and the
     % scheduler array index. cellfun pairs each job ID with its
@@ -209,13 +210,17 @@ if useJobArrays
     schedulerIDs = vertcat(schedulerIDs{:});
 else
     % The scheduler ID of each task is the job ID.
-    schedulerIDs = convertCharsToStrings(jobIDs);
+    schedulerIDs = string(jobIDs);
 end
 
-% Set the scheduler ID for each task
-set(tasks, 'SchedulerID', schedulerIDs);
-
-cluster.setJobClusterData(job, struct('type', 'generic'));
+% Store the scheduler ID for each task and the job cluster data
+jobData = struct('type', 'generic');
+if verLessThan('matlab', '9.7') % schedulerID stored in job data
+    jobData.ClusterJobIDs = schedulerIDs;
+else % schedulerID on task since 19b
+    set(tasks, 'SchedulerID', schedulerIDs);
+end
+cluster.setJobClusterData(job, jobData);
 
 function [useJobArrays, maxJobArraySize] = iGetJobArrayProps(cluster)
 % Look for useJobArrays and maxJobArray size in the following order:
