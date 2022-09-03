@@ -29,13 +29,13 @@ nb.ClusterMatlabRoot = '';
 nb.HasSharedFilesystem = false;
 nb.JobStorageLocation = jsl;
 % MW: Need to fix
-nb.NumWorkers = 192;
+nb.NumWorkers = 1000;
 nb.OperatingSystem = 'unix';
 nb.PluginScriptsLocation = fileparts(mfilename("fullpath"));
 
 %% AdditionalProperties
 nb.AdditionalProperties.MachineClass = 'SLES12';
-nb.AdditionalProperties.MemPerCpu = '';
+nb.AdditionalProperties.MemPerCpu = 0;
 % MW: Need to fix
 nb.AdditionalProperties.RemoteJobStorageLocation = pwd;
 nb.AdditionalProperties.RemoteQslot = qslot;
@@ -48,7 +48,7 @@ nb.saveProfile('Description', profile)
 if wasdefault==true
     dp_fh = iGetClusterProfileInfo;
     % Was previously the default profile, so set it back to the default
-    dp_fh(profile)
+    dp_fh(profile);
 end
 
 end
