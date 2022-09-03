@@ -1,4 +1,4 @@
-Copyright 2010-2020 The MathWorks, Inc.
+Copyright 2010-2022 The MathWorks, Inc.
 
 MATLAB and Simulink are registered trademarks of The MathWorks, Inc.
 See www.mathworks.com/trademarks for a list of additional trademarks.
@@ -42,7 +42,6 @@ set(cluster, 'OperatingSystem', 'unix');
 
 2. Create a job and some tasks, submit the job, and wait for it to finish before
 getting the results. Do the same for communicating jobs if required.
-
 
 As an alternative to these steps, create a profile that defines the appropriate
 properties and run profile validation to verify that the profile
