@@ -24,7 +24,7 @@ end
 class_reservation = sprintf('--class-reservation cores=%d', cluster.NumThreads);
 if isprop(cluster.AdditionalProperties, 'MemPerCpu')
     memPerCpu = cluster.AdditionalProperties.MemPerCpu;
-    if ~isempty(memPerCpu) && isnumeric(memPerCpu)
+    if ~isempty(memPerCpu) && isnumeric(memPerCpu) && memPerCpu>0
         class_reservation = sprintf('%s,memory=%d', memPerCpu);
     end
 end
