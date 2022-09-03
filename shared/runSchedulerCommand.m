@@ -7,17 +7,21 @@ function [status, result] = runSchedulerCommand(cmd)
 % the system call to the scheduler on UNIX within a shell script to
 % sanitize any exit codes in this range.
 
-% Copyright 2019 The MathWorks, Inc.
+% Copyright 2019-2022 The MathWorks, Inc.
 
 persistent wrapper
 
 if isunix
     if isempty(wrapper)
-        wrapper = fullfile( toolboxdir('parallel'), ...
-            'bin', 'util', 'shellWrapper.sh' );
+        if verLessThan('matlab', '9.7') % folder renamed in 19b
+            dirName = 'distcomp';
+        else
+            dirName = 'parallel';
+        end
+        wrapper = fullfile(toolboxdir(dirName), ...
+            'bin', 'util', 'shellWrapper.sh'); %#ok<*DCRENAME>
     end
-    cmd = convertStringsToChars(cmd);
-    cmd = [wrapper, ' ', cmd];
+    cmd = sprintf('%s %s', wrapper, cmd);
 end
 
 [status, result] = system(cmd);

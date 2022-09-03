@@ -4,7 +4,7 @@ function OK = cancelTaskFcn(cluster, task)
 % Set your cluster's PluginScriptsLocation to the parent folder of this
 % function to run it when you cancel a task.
 
-% Copyright 2020 The MathWorks, Inc.
+% Copyright 2020-2022 The MathWorks, Inc.
 
 % Store the current filename for the errors, warnings and
 % dctSchedulerMessages
@@ -35,7 +35,12 @@ if ~strcmpi(task.Parent.Type, 'independent')
 end
 
 % Get the cluster to delete the task
-schedulerID = task.SchedulerID;
+if verLessThan('matlab', '9.7') % schedulerID stored in job data
+    schedulerIDs = data.ClusterJobIDs;
+    schedulerID = schedulerIDs{task.ID};
+else % schedulerID on task since 19b
+    schedulerID = task.SchedulerID;
+end
 erroredTaskAndCauseString = '';
 feederName = getFeederName();
 commandToRun = sprintf('nbjob remove --target %s %s', feederName, schedulerID);
