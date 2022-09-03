@@ -6,7 +6,7 @@ function communicatingSubmitFcn(cluster, job, environmentProperties)
 %
 % See also parallel.cluster.generic.communicatingDecodeFcn.
 
-% Copyright 2010-2020 The MathWorks, Inc.
+% Copyright 2010-2022 The MathWorks, Inc.
 
 % Store the current filename for the errors, warnings and dctSchedulerMessages
 currFilename = mfilename;
@@ -27,15 +27,13 @@ if ~strcmpi(cluster.OperatingSystem, 'unix')
           'The function %s only supports clusters with unix OS.', currFilename)
 end
 
-
 % Determine the debug setting. Setting to true makes the MATLAB workers
 % output additional logging. If EnableDebug is set in the cluster object's
 % AdditionalProperties, that takes precedence. Otherwise, look for the
 % PARALLEL_SERVER_DEBUG and MDCE_DEBUG environment variables in that order.
 % If nothing is set, debug is false.
 enableDebug = 'false';
-if isprop(cluster.AdditionalProperties, 'EnableDebug') ...
-        && islogical(cluster.AdditionalProperties.EnableDebug)
+if isprop(cluster.AdditionalProperties, 'EnableDebug')
     % Use AdditionalProperties.EnableDebug, if it is set
     enableDebug = char(string(cluster.AdditionalProperties.EnableDebug));
 else
@@ -75,11 +73,20 @@ variables = {'PARALLEL_SERVER_DECODE_FUNCTION', decodeFunction; ...
     'PARALLEL_SERVER_CMR', strip(cluster.ClusterMatlabRoot, 'right', '/'); ...
     'PARALLEL_SERVER_TOTAL_TASKS', num2str(environmentProperties.NumberOfTasks); ...
     'PARALLEL_SERVER_NUM_THREADS', num2str(cluster.NumThreads)};
+% Environment variable names different prior to 19b
+if verLessThan('matlab', '9.7')
+    variables(:,1) = replace(variables(:,1), 'PARALLEL_SERVER_', 'MDCE_');
+end
+% Trim the environment variables of empty values.
+nonEmptyValues = cellfun(@(x) ~isempty(strtrim(x)), variables(:,2));
+variables = variables(nonEmptyValues, :);
 
 % The local job directory
 localJobDirectory = cluster.getJobFolder(job);
 % Specify the job wrapper script to use.
-if isprop(cluster.AdditionalProperties, 'UseSmpd') && cluster.AdditionalProperties.UseSmpd
+% Prior to R2019a, only the SMPD process manager is supported.
+if verLessThan('matlab', '9.6') || ...
+        isprop(cluster.AdditionalProperties, 'UseSmpd') && cluster.AdditionalProperties.UseSmpd
     scriptName = 'communicatingJobWrapperSmpd.sh';
 else
     scriptName = 'communicatingJobWrapper.sh';
@@ -97,14 +104,7 @@ dctSchedulerMessage(5, '%s: Using %s as log file', currFilename, quotedLogFile);
 jobName = sprintf('Job%d-%d', job.ID, round(rand*10000));
 
 taskId = initializeNetbatch(cluster, environmentProperties.StorageLocation, environmentProperties.JobLocation, jobName);
-
-if isprop(cluster.AdditionalProperties, 'MachineClass') ...
-        && (ischar(cluster.AdditionalProperties.MachineClass) || isstring(cluster.AdditionalProperties.MachineClass))
-    machineClass = cluster.AdditionalProperties.MachineClass;
-else
-    error('parallelexamples:GenericNetbatch:IncorrectArguments', ...
-          'MachineClass must be a character string');
-end
+machineClass = validatedPropValue(cluster.AdditionalProperties, 'MachineClass', 'char');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CUSTOMIZATION MAY BE REQUIRED %%
@@ -115,9 +115,8 @@ end
 additionalSubmitArgs = sprintf('--parallel slots=%d', environmentProperties.NumberOfTasks+1);
 dctSchedulerMessage(4, '%s: Requesting %d slots.', currFilename, environmentProperties.NumberOfTasks);
 commonSubmitArgs = getCommonSubmitArgs(cluster);
-if ~isempty(commonSubmitArgs) && ischar(commonSubmitArgs)
-    additionalSubmitArgs = strtrim([additionalSubmitArgs, ' ', commonSubmitArgs]);
-end
+additionalSubmitArgs = strtrim(sprintf('%s %s', additionalSubmitArgs, commonSubmitArgs))
+
 % Create a script to submit a Netbatch job - this will be created in the job directory
 dctSchedulerMessage(5, '%s: Generating script for task.', currFilename);
 localScriptName = tempname(localJobDirectory);
@@ -142,6 +141,7 @@ end
 
 dctSchedulerMessage(1, '%s: Job output will be written to: %s\nSubmission output: %s\n', currFilename, logFile, cmdOut);
 
+% Calculate the schedulerIDs
 jobIDs = extractJobId(cmdOut);
 % jobIDs must be a cell array
 if isempty(jobIDs)
@@ -157,6 +157,12 @@ if numel(job.Tasks) == 1
 else
     schedulerIDs = repmat(jobIDs, size(job.Tasks));
 end
-set(job.Tasks, 'SchedulerID', schedulerIDs);
 
-cluster.setJobClusterData(job, struct('type', 'generic'));
+% Store the scheduler ID for each task and the job cluster data
+jobData = struct('type', 'generic');
+if verLessThan('matlab', '9.7') % schedulerID stored in job data
+    jobData.ClusterJobIDs = schedulerIDs;
+else % schedulerID on task since 19b
+    set(job.Tasks, 'SchedulerID', schedulerIDs);
+end
+cluster.setJobClusterData(job, jobData);
