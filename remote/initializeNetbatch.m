@@ -25,10 +25,10 @@ else
 end
 
 % Generate task configuration file
-tokens = regexp(jsl, '\{(.*?)\}', 'tokens');
-% Extract the second token (UNIX, not PC)
-folder = tokens{2};
-outputFilename = [folder{1} '/' jobFolder '/task.conf'];
+%tokens = regexp(jsl, '\{(.*?)\}', 'tokens');
+%Extract the second token (UNIX, not PC)
+%folder = tokens{2};
+outputFilename = [jsl '/' jobFolder '/task.conf'];
 createTaskConfFile(outputFilename, remoteQueue, remoteQslot, jobName);
 
 % Create feeder name
@@ -36,13 +36,8 @@ feederName = getFeederName();
 
 % Start feeder
 commandToRun = sprintf('nbfeeder start --join --name %s', feederName);
-try
-    % Make the shelled out call to run the command.
-    [cmdFailed, cmdOut] = runSchedulerCommand(commandToRun);
-catch err
-    cmdFailed = true;
-    cmdOut = err.message;
-end
+% Execute the command on the remote host.
+[cmdFailed, cmdOut] = remoteConnection.runCommand(commandToRun);
 if cmdFailed
     error('parallelexamples:GenericNetbatch:CreateFeeder', ...
           'Failed to create feeder to Netbatch using command:\n\t%s.\nReason: %s', ...
@@ -51,13 +46,8 @@ end
 
 % Load configuration file
 commandToRun = sprintf('nbtask load --target %s %s', feederName, outputFilename);
-try
-    % Make the shelled out call to run the command.
-    [cmdFailed, cmdOut] = runSchedulerCommand(commandToRun);
-catch err
-    cmdFailed = true;
-    cmdOut = err.message;
-end
+% Execute the command on the remote host.
+[cmdFailed, cmdOut] = remoteConnection.runCommand(commandToRun);
 if cmdFailed
     error('parallelexamples:GenericNetbatch:TaskLoadFailed', ...
           'Failed to load task to Netbatch using command:\n\t%s.\nReason: %s', ...
