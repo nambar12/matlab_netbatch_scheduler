@@ -1,11 +1,11 @@
-function nb = generateNetbatchProfile(qslot,queue)
+function nb = generateNetbatchProfile(queue,qslot)
 %GENERATENETBATCHPROFILE Create Netbatch profile
-% NB = GENERATENETBATCHPROFILE(QSLOT,QUEUE)
+% NB = GENERATENETBATCHPROFILE(QUEUE,QSLOT)
 %
 % Copyright 2022 The Mathworks, Inc.
 
 if nargin~=2
-   error('Must provide RemoteQslot and RemoteQueue.')
+   error('Must provide RemoteQueue and RemoteQslot.')
 end
 
 profile = 'netbatch';
