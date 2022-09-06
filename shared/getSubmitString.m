@@ -2,10 +2,10 @@ function submitString = getSubmitString(jobName, quotedLogFile, quotedCommand, .
     additionalSubmitArgs, taskId, machineClass, jobArrayString)
 %GETSUBMITSTRING Gets the correct nbjob command for a Netbatch cluster
 
-% Copyright 2010-2021 The MathWorks, Inc.
+% Copyright 2010-2022 The MathWorks, Inc.
 
 % Submit to Netbatch using nbjob.  Note the following:
-% "-J " - specifies the job name
+% "-J" - specifies the job name
 % "-o" - specifies where standard output goes to (and standard error, when -e is not specified)
 % Note that extra spaces in the nbjob command are permitted
 
