@@ -61,6 +61,8 @@ if ~strcmp(clusterState, 'unknown')
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+end
+
 function state = iExtractJobState(nbstatusOut, numSlaves)
 % Function to extract the job state from the output of nbstatus
 
@@ -99,3 +101,5 @@ if numFailed > 0
 end
 
 state = 'unknown';
+
+end
