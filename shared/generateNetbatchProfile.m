@@ -26,8 +26,7 @@ end
 
 nb.HasSharedFilesystem = true;
 nb.JobStorageLocation = jsl;
-% MW: Need to fix
-nb.NumWorkers = 1000;
+nb.NumWorkers = 10000;
 nb.OperatingSystem = 'unix';
 nb.PluginScriptsLocation = fileparts(mfilename("fullpath"));
 
